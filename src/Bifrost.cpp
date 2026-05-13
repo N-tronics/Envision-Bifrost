@@ -3,8 +3,9 @@
 #include "random.hpp"
 #include "HMAC_SHA1.hpp"
 #include "DiffieHellman.hpp"
+#include<string>
 #include<time.h>
-int main(){
+string main(){
     //TOTP
     Bytes key;
     time_t timestamp = time(NULL);
@@ -17,8 +18,10 @@ int main(){
     sample_bytes[0]&=0x7f;
     cpp_int sample = bytesToCppInt(sample_bytes);
     int OTP = (sample%1000000).convert_to<int>();
-    return OTP;
-
-
+    std::string otp_string = std::to_string(OTP);
+    while(otp_string.length()<6){
+        otp_string = "0"+otp_string;
+    }
+    return otp_string;
 
 }
