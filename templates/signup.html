@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bifrost | Create Account</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg-color: #f4f7fb;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --input-bg: #f8fafc;
+        }
+
+        body {    
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg-color);
+            background-image: radial-gradient(at 0% 0%, hsla(217,100%,94%,1) 0, transparent 50%), 
+                              radial-gradient(at 100% 100%, hsla(213,100%,93%,1) 0, transparent 50%);
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px; 
+            box-sizing: border-box;
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            padding: 45px 40px; 
+            border-radius: 24px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.05); 
+            width: 100%; 
+            max-width: 420px; 
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .brand {
+            text-align: center;
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 24px;
+            color: var(--text-main);
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        p {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            margin-top: 0;
+        }
+
+        .step { 
+            display: none; 
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .step.active { 
+            display: block; 
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        input { 
+            width: 100%; 
+            padding: 14px 16px; 
+            margin: 0 0 16px 0; 
+            border: 1px solid var(--border-color); 
+            border-radius: 12px; 
+            box-sizing: border-box; 
+            font-family: inherit;
+            font-size: 15px;
+            color: var(--text-main);
+            background: var(--input-bg);
+            transition: all 0.2s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+
+        button { 
+            width: 100%; 
+            padding: 14px; 
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%); 
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        .key-box { 
+            background: #1e293b; 
+            color: #10b981;
+            padding: 16px; 
+            font-family: 'Courier New', Courier, monospace; 
+            word-break: break-all; 
+            border-radius: 12px; 
+            margin: 0 0 20px 0; 
+            font-size: 13px;
+            text-align: center;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .footer-link {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .footer-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="brand">Bifrost</div>
+        <h2>Register Device</h2>
+        <form action="/signup" method="POST">
+            <div id="step1" class="step active">
+                <p>Step 1: Create your secure account credentials.</p>
+                <input type="text" name="username" placeholder="Choose a Username" required>
+                <input type="password" name="password" placeholder="Create a Password" required>
+                <button type="button" onclick="nextStep(2)">Continue to Pairing</button>
+            </div>
+
+            <div id="step2" class="step">
+                <p>Step 2: Copy your Public Key to the terminal.</p>
+                <div class="key-box">{{ alice_public }}</div>
+                <p>Paste your partner's Public Key below:</p>
+                <input type="text" name="bob_public_key" placeholder="Enter partner's key" required>
+                <button type="submit">Complete Setup</button>
+            </div>
+        </form>
+        <div class="footer-link">
+            Already have an account? <a href="/login">Log in</a>
+        </div>
+    </div>
+
+    <script>
+        function nextStep(step) {
+            // Basic validation before moving to step 2
+            const inputs = document.querySelectorAll('#step1 input');
+            let valid = true;
+            inputs.forEach(input => { if(!input.value) valid = false; });
+            
+            if(valid) {
+                document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+                document.getElementById('step' + step).classList.add('active');
+            } else {
+                alert("Please fill in both fields before continuing.");
+            }
+        }
+    </script>
+</body>
+</html>
