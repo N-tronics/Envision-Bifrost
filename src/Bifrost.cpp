@@ -1,14 +1,14 @@
-#include "typedefs.hpp"
-#include "utilities.hpp"
-#include "random.hpp"
-#include "HMAC_SHA1.hpp"
-#include "DiffieHellman.hpp"
+#include <DiffieHellman.hpp>
+#include <HMAC_SHA1.hpp>
+#include <random.hpp>
+#include <typedefs.hpp>
+#include <utilities.hpp>
 
-#include <iostream>
-#include <fstream>
-#include <string>
 #include <ctime>
+#include <fstream>
+#include <iostream>
 #include <stdexcept>
+#include <string>
 
 #include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
@@ -16,8 +16,7 @@
 using namespace std;
 using json = nlohmann::json;
 
-string generateTOTP(Bytes key, Diffie_Hellman& dh)
-{
+string generateTOTP(Bytes key, Diffie_Hellman &dh) {
     // TOTP
     time_t timestamp = time(NULL);
 
@@ -31,8 +30,7 @@ string generateTOTP(Bytes key, Diffie_Hellman& dh)
 
     Bytes sample_bytes;
 
-    for(int i = offset; i < offset + 4; i++)
-    {
+    for (int i = offset; i < offset + 4; i++) {
         sample_bytes.push_back(hmac_bytes[i]);
     }
 
@@ -44,25 +42,21 @@ string generateTOTP(Bytes key, Diffie_Hellman& dh)
 
     string otp_string = to_string(OTP);
 
-    while(otp_string.length() < 6)
-    {
+    while (otp_string.length() < 6) {
         otp_string = "0" + otp_string;
     }
 
     return otp_string;
 }
 
-int main()
-{
-    try
-    {
+int main() {
+    try {
         string registrationCode;
 
         cout << "Enter 6-digit registration code: ";
         cin >> registrationCode;
 
-        if(registrationCode.length() != 6)
-        {
+        if (registrationCode.length() != 6) {
             throw runtime_error("Registration code must be 6 digits.");
         }
 
@@ -82,37 +76,27 @@ int main()
         cout << "\nBifrost public key:\n";
         cout << bifrostPublicKeyHex << endl;
 
-        cpr::Response response = cpr::Post(
-            cpr::Url{url},
-            cpr::Body{requestBody.dump()},
-            cpr::Header{
-                {"Content-Type", "application/json"}
-            }
-        );
+        cpr::Response response =
+            cpr::Post(cpr::Url{url}, cpr::Body{requestBody.dump()},
+                      cpr::Header{{"Content-Type", "application/json"}});
 
-        if(response.error)
-        {
+        if (response.error) {
             throw runtime_error(response.error.message);
         }
 
-        if(response.status_code != 200)
-        {
+        if (response.status_code != 200) {
             cout << "\nServer response:\n";
             cout << response.text << endl;
 
-            throw runtime_error(
-                "Server returned status code " +
-                to_string(response.status_code)
-            );
+            throw runtime_error("Server returned status code " +
+                                to_string(response.status_code));
         }
 
         json responseJson = json::parse(response.text);
 
-        if(!responseJson.contains("server-public-key"))
-        {
+        if (!responseJson.contains("server-public-key")) {
             throw runtime_error(
-                "Response JSON does not contain server-public-key."
-            );
+                "Response JSON does not contain server-public-key.");
         }
 
         string serverPublicKeyHex = responseJson["server-public-key"];
@@ -127,8 +111,7 @@ int main()
 
         ofstream file("shared_secret.txt");
 
-        if(!file)
-        {
+        if (!file) {
             throw runtime_error("Could not create shared_secret.txt");
         }
 
@@ -143,9 +126,7 @@ int main()
         cout << "\nShared secret saved in shared_secret.txt" << endl;
 
         cout << "\nGenerated OTP: " << otp << endl;
-    }
-    catch(const exception& e)
-    {
+    } catch (const exception &e) {
         cerr << "\nError: " << e.what() << endl;
         return 1;
     }
