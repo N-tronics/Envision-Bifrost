@@ -15,8 +15,6 @@ def generate_totp(shared_secret):
     time_message = struct.pack(">Q", thirty_second_window)
 
     # --- STEP 3: THE DIGITAL BLENDER (HMAC) ---
-    print(digital_key.hex())
-    print(time_message.hex())
     hash_result = hmac.new(digital_key, time_message, hashlib.sha1).digest()
 
     # --- STEP 4: PICKING THE NUMBERS ---
@@ -39,4 +37,3 @@ if __name__ == "__main__":
     test_secret = "my_super_secret_key"
     print(f"Your 6-digit code for right now is: {generate_totp(test_secret)}")
     print("Wait 30 seconds and run it again to see it change!")
-
