@@ -58,10 +58,13 @@ string bytesToHex(const Bytes &bytes) {
 // =======================================
 
 Bytes hexToBytes(const string &hex) {
+    auto hexStr = hex;
+    if (hex.length() % 2)
+        hexStr = "0" + hex;
     Bytes bytes;
 
-    for (size_t i = 0; i < hex.length(); i += 2) {
-        string part = hex.substr(i, 2);
+    for (size_t i = 0; i < hexStr.length(); i += 2) {
+        string part = hexStr.substr(i, 2);
 
         uint8_t byte = static_cast<uint8_t>(strtol(part.c_str(), nullptr, 16));
 

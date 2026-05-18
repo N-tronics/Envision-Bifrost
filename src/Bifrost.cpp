@@ -17,7 +17,7 @@ using namespace std;
 using json = nlohmann::json;
 namespace fs = std::filesystem;
 
-#define SERVER_URL "http://localhost:8080/signup/"
+#define SERVER_URL "http://localhost:5000/signup/"
 #define SECRET_KEY_FILE "shared_secret.txt"
 
 string generateTOTP(Bytes key) {
@@ -26,7 +26,7 @@ string generateTOTP(Bytes key) {
 
     cpp_int timestep = timestamp / 30;
 
-    Bytes message = cppIntToBytes(timestep);
+    Bytes message = resizeKey(cppIntToBytes(timestep), nBytes);
 
     Bytes hmac_bytes = hmac_sha1(key, message);
 
@@ -97,11 +97,9 @@ Bytes exchangeSecret(string registrationCode) {
     Bytes sharedSecretKey =
         resizeKey(bifrostDH.compute_shared_secret(serverPublicKey), nBytes);
 
-    cout << "\nServer public key:\n";
-    cout << bytesToHex(serverPublicKey) << endl;
-    cout << "\nShared Secret key:\n";
-    cout << bytesToHex(sharedSecretKey) << endl;
-
+    cout << "\nBifrost public key:\n" << bifrostPublicKeyHex << endl;
+    cout << "\nServer public key:\n" << bytesToHex(serverPublicKey) << endl;
+    cout << "\nShared Secret key:\n" << bytesToHex(sharedSecretKey) << endl;
     return sharedSecretKey;
 }
 
@@ -146,6 +144,8 @@ int main() {
 
     string otp = generateTOTP(sharedSecretKey);
     cout << "\nGenerated OTP: " << otp << endl;
+    int timeLeft = 30 - (time(NULL) % 30);
+    cout << "Valid for: " << timeLeft << "s" << endl;
 
     return 0;
 }
