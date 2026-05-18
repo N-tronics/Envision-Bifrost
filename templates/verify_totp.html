@@ -21,6 +21,11 @@
             background: #334155; border: 2px solid #475569;
             color: #10b981; font-size: 32px; font-weight: 700;
             text-align: center; letter-spacing: 8px; border-radius: 12px;
+            box-sizing: border-box;
+        }
+        .otp-input.error {
+            border-color: #ef4444;
+            color: #ef4444;
         }
         button { 
             width: 100%; padding: 14px; background: #3b82f6; 
@@ -28,14 +33,40 @@
             font-weight: 600; cursor: pointer; transition: 0.2s;
         }
         button:hover { background: #2563eb; transform: translateY(-2px); }
+        .alert { 
+            padding: 12px; margin-bottom: 16px; border-radius: 8px; 
+            font-size: 14px; font-weight: 500; 
+        }
+        .alert-danger { 
+            background-color: rgba(239, 68, 68, 0.15); 
+            color: #fca5a5; 
+            border: 1px solid rgba(239, 68, 68, 0.3); 
+        }
     </style>
 </head>
 <body>
     <div class="card">
         <h2 style="margin:0">Verify Identity</h2>
-        <p style="color: #94a3b8; font-size: 14px;">Enter the 6-digit code from your Bifrost terminal.</p>
+        <p style="color: #94a3b8; font-size: 14px;">Enter the 6-digit code from Bifrost.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
         <form action="/verify-totp" method="POST">
-            <input type="text" name="otp" class="otp-input" placeholder="000000" maxlength="6" required>
+            <input 
+                type="text" 
+                name="otp" 
+                class="otp-input{% if get_flashed_messages() %} error{% endif %}" 
+                placeholder="000000" 
+                maxlength="6" 
+                autocomplete="one-time-code"
+                required
+            >
             <button type="submit">Verify & Sign In</button>
         </form>
     </div>

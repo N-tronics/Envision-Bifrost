@@ -51,7 +51,7 @@ def signup():
         
         # Check if user already exists
         if User.query.filter_by(username=username).first():
-            flash("Username already exists!", "danger")
+            flash("Username already exists. Please choose a different one.", "danger")
             return redirect(url_for('signup'))
             
         # Clean up any existing pending exchanges for this user (Only 1 allowed)
@@ -94,8 +94,9 @@ def login():
         if user:
             session['pending_user'] = username
             return redirect(url_for('verify_totp'))
-            
-        return "Invalid Username or Password!"
+
+        flash("Invalid username or password. Please try again.", "danger")
+        return redirect(url_for('login'))
         
     return render_template('login.html')
 
@@ -111,11 +112,14 @@ def verify_totp():
         user = User.query.filter_by(username=username).first()
         expected_otp = totp.generate_totp(user.shared_secret)
         
+        print(f'Expected OTP: {expected_otp}')
+        
         if user_otp == expected_otp:
             session['user'] = session.pop('pending_user')
             return redirect(url_for('home'))
-            
-        return "Invalid TOTP Code! <a href='/verify-totp'>Try again</a>"
+
+        flash("Invalid TOTP code. Please check your Bifrost and try again.", "danger")
+        return redirect(url_for('verify_totp'))
 
     return render_template('verify_totp.html')
 
@@ -158,6 +162,9 @@ def bifrost_exchange(code):
         # Destroy the temporary endpoint
         db.session.delete(pending)
         db.session.commit()
+
+        print(f'shared secret: {shared_secret}')
+        print(f'server-public-key: {to_hex_be(pending.alice_public)}')
         
         return jsonify({
             "server-public-key": to_hex_be(pending.alice_public),
