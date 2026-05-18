@@ -4,15 +4,16 @@
 // cpp_int -> bytes
 // =======================================
 
-vector<uint8_t> cppIntToBytes(cpp_int num) {
-    vector<uint8_t> bytes;
+Bytes cppIntToBytes(const cpp_int &num) {
+    Bytes bytes;
+    cpp_int n = num;
 
-    while (num > 0) {
-        uint8_t byte = static_cast<uint8_t>(num & 0xFF);
+    while (n > 0) {
+        uint8_t byte = static_cast<uint8_t>(n & 0xFF);
 
         bytes.insert(bytes.begin(), byte);
 
-        num >>= 8;
+        n >>= 8;
     }
 
     return bytes;
@@ -22,7 +23,7 @@ vector<uint8_t> cppIntToBytes(cpp_int num) {
 // bytes -> cpp_int
 // =======================================
 
-cpp_int bytesToCppInt(vector<uint8_t> bytes) {
+cpp_int bytesToCppInt(const Bytes &bytes) {
     cpp_int num = 0;
 
     for (uint8_t byte : bytes) {
@@ -38,7 +39,7 @@ cpp_int bytesToCppInt(vector<uint8_t> bytes) {
 // bytes -> hex
 // =======================================
 
-string bytesToHex(vector<uint8_t> bytes) {
+string bytesToHex(const Bytes &bytes) {
     const char *hexChars = "0123456789ABCDEF";
 
     string hex;
@@ -56,8 +57,8 @@ string bytesToHex(vector<uint8_t> bytes) {
 // hex -> bytes
 // =======================================
 
-vector<uint8_t> hexToBytes(string hex) {
-    vector<uint8_t> bytes;
+Bytes hexToBytes(const string &hex) {
+    Bytes bytes;
 
     for (size_t i = 0; i < hex.length(); i += 2) {
         string part = hex.substr(i, 2);
@@ -74,20 +75,21 @@ vector<uint8_t> hexToBytes(string hex) {
 // cpp_int -> hex
 // =======================================
 
-string cppIntToHex(cpp_int num) {
+string cppIntToHex(const cpp_int &num) {
     if (num == 0)
         return "0";
+    cpp_int n = num;
 
     const char *hexChars = "0123456789ABCDEF";
 
     string hex;
 
-    while (num > 0) {
-        int digit = static_cast<int>(num & 0xF);
+    while (n > 0) {
+        int digit = static_cast<int>(n & 0xF);
 
         hex = hexChars[digit] + hex;
 
-        num >>= 4;
+        n >>= 4;
     }
 
     return hex;
@@ -97,7 +99,7 @@ string cppIntToHex(cpp_int num) {
 // hex -> cpp_int
 // =======================================
 
-cpp_int hexToCppInt(string hex) {
+cpp_int hexToCppInt(const string &hex) {
     cpp_int num = 0;
 
     for (char c : hex) {
@@ -120,10 +122,26 @@ cpp_int hexToCppInt(string hex) {
 // print bytes
 // =======================================
 
-void printBytes(vector<uint8_t> bytes) {
+void printBytes(const Bytes &bytes) {
     for (uint8_t byte : bytes) {
         printf("%02X ", byte);
     }
 
     cout << endl;
+}
+
+// =======================================
+// print bytes
+// =======================================
+
+Bytes resizeKey(const Bytes &key, const int nBytes) {
+    if (key.size() >= nBytes) { // when key size is bigger than required
+        return Bytes(key.end() - nBytes, key.end());
+    }
+    Bytes padded(nBytes,
+                 0); // when key size is smaller than required-> front padding
+    int start = nBytes - key.size();
+    for (auto i = 0; i < key.size(); i++)
+        padded[i + start] = key[i];
+    return padded;
 }

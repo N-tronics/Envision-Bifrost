@@ -1,9 +1,8 @@
 #ifndef UTILITIES_HPP
 #define UTILITIES_HPP
 
-#include <iostream>
-#include <vector>
 #include <string>
+#include <typedefs.hpp>
 
 #include <boost/multiprecision/cpp_int.hpp>
 
@@ -11,24 +10,27 @@ using namespace std;
 using namespace boost::multiprecision;
 
 // cpp_int -> bytes
-vector<uint8_t> cppIntToBytes(cpp_int num);
+Bytes cppIntToBytes(const cpp_int &num);
 
 // bytes -> cpp_int
-cpp_int bytesToCppInt(vector<uint8_t> bytes);
+cpp_int bytesToCppInt(const Bytes &bytes);
 
 // bytes -> hex
-string bytesToHex(vector<uint8_t> bytes);
+string bytesToHex(const Bytes &bytes);
 
 // hex -> bytes
-vector<uint8_t> hexToBytes(string hex);
+Bytes hexToBytes(const string &hex);
 
 // cpp_int -> hex string
-string cppIntToHex(cpp_int num);
+string cppIntToHex(const cpp_int &num);
 
 // hex -> cpp_int
-cpp_int hexToCppInt(string hex);
+cpp_int hexToCppInt(const string &hex);
 
 // print bytes
-void printBytes(vector<uint8_t> bytes);
+void printBytes(const Bytes &bytes);
+
+// Resize a given key
+Bytes resizeKey(const Bytes &key, const int nBytes);
 
 #endif
