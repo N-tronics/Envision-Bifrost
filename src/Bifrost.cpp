@@ -22,7 +22,12 @@ string generateTOTP(Bytes key, Diffie_Hellman &dh) {
 
     cpp_int timestep = timestamp / 30;
 
-    Bytes message = dh.cpp_int_to_bytes(timestep);
+    //Bytes message = dh.cpp_int_to_bytes(timestep);
+    Bytes message(8);
+    for(int i=7;i>-1;i--){
+        message[i]=(timestep & 0xFF).convert_to<Byte>();
+        timestep>>=8;
+    }
 
     Bytes hmac_bytes = hmac_sha1(key, message);
 
@@ -105,9 +110,12 @@ int main() {
 
         cpp_int sharedSecret = bifrostDH.compute_shared_secret(serverPublicKey);
 
+
         Bytes key = bifrostDH.cpp_int_to_bytes(sharedSecret);
 
         key = bifrostDH.resizeKey(key, nBytes);
+
+        string sharedSecret_hex = bytesToHex(key);
 
         ofstream file("shared_secret.txt");
 
@@ -115,10 +123,18 @@ int main() {
             throw runtime_error("Could not create shared_secret.txt");
         }
 
-        file << sharedSecret;
+        file << sharedSecret_hex;
         file.close();
 
-        string otp = generateTOTP(key, bifrostDH);
+        ifstream saved_file("shared_secret.txt");
+        if(!saved_file){
+            throw runtime_error("couldn't open shared_secret.txt");
+        }
+        string loaded_secret;
+        getline(saved_file,loaded_secret);
+        saved_file.close();
+
+        string otp = generateTOTP(hexToBytes(loaded_secret), bifrostDH);
 
         cout << "\nServer public key:\n";
         cout << serverPublicKeyHex << endl;
