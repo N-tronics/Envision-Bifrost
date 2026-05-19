@@ -7,7 +7,6 @@ Bifrost is a secure Two-Factor Authentication (2FA) system built in C++ that com
 
 The project demonstrates how modern authentication systems securely generate and verify OTPs without transmitting secret keys over the network.
 
----
 
 ## Features
 
@@ -20,7 +19,6 @@ The project demonstrates how modern authentication systems securely generate and
 - CMake build support
 - OpenSSL cryptographic integration
 
----
 
 ## How It Works
 
@@ -35,15 +33,12 @@ Using the exchanged public keys:
 
 This shared secret is never transmitted directly, making the communication secure.
 
----
 
 ### 2. Secret Key Generation
 
 The shared secret is processed and resized into a secure key suitable for HMAC operations.
 
 This key is stored securely on both client and server sides.
-
----
 
 ### 3. TOTP Generation
 
@@ -55,7 +50,6 @@ T = floor(Current Unix Time / 30)
 
 The resulting timestep value is used as the message input for HMAC-SHA1.
 
----
 
 ### 4. HMAC-SHA1 Computation
 
@@ -67,7 +61,6 @@ OTP = HMAC_SHA1(secret_key, timestep)
 
 The generated hash is dynamically truncated to produce a numeric One-Time Password.
 
----
 
 ### 5. OTP Verification
 
@@ -75,7 +68,6 @@ The server independently generates the OTP using the stored secret key and curre
 
 If both OTPs match, authentication succeeds.
 
----
 
 ## Technologies Used
 
@@ -85,8 +77,6 @@ If both OTPs match, authentication succeeds.
 - CPR (HTTP Requests)
 - nlohmann/json
 - CMake
-
----
 
 ## Example Workflow
 
